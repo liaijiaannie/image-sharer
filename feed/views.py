@@ -1,10 +1,11 @@
 from typing import Any
 from django.shortcuts import render
-from django.views.generic import TemplateView, DetailView, FormView, ListView
+from django.views.generic import TemplateView, DetailView, FormView
 from .models import Post
 from .forms import PostForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from followers.models import Follower
 
 # Create your views here.
 class HomePageView(TemplateView):
@@ -12,7 +13,6 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['my_thing'] = "Hello world :P this is dynamic"
         ## order by id descending: minus sign 
         context['posts'] = Post.objects.all().order_by('-id')
         return context
@@ -40,9 +40,17 @@ class AddPostView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Your post was successful")
         return super().form_valid(form)
     
-class ListPostsView(ListView):
-    http_method_names = ["get"]
-    template_name = "feed/list.html"
-    model = Post
-    context_object_name = "posts"
-    queryset = Post.objects.all().order_by('-id')[0:12]
+class FollowingView(LoginRequiredMixin, TemplateView):
+    template_name = "feed/home.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        following = list(Follower.objects.filter(followed_by=self.request.user).values_list('following', flat=True))
+
+        ## order by id descending: minus sign 
+        context['posts'] = Post.objects.filter(author__in=following).order_by('-id')
+        return context

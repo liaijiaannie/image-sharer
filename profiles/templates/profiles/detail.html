@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}
+Profile - {{ user.username }}
+{% endblock%}
+
+{% block content %} 
+<!--profile bar-->
+  <section class="h-100 gradient-custom-2">
+    <div class="container py-3 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col col-lg-9 col-xxl-12">
+          <div class="card">
+            <div class="rounded-top text-white d-flex flex-row" style="background-color: #333333; height:200px;">
+              <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                <img src="{{ user.profile.image.url }}"
+                  alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
+                  style="width: 150px; z-index: 1">
+                {% if request.user.is_authenticated %}
+                {% if request.user != user %}
+                <button type="button" class="btn btn-outline-dark js-follow" data-mdb-ripple-color="dark"
+                  style="z-index: 1;" data-username="{{ user.username }}" 
+                  data-action="{% if you_follow %}un{% endif %}follow" data-url="{% url 'profiles:follow' user.username %}">
+                  <div class="js-follow-text">
+                    {% if you_follow %}
+                    Unfollow
+                    {% else %}
+                    Follow
+                    {% endif %}
+                  </div>
+                </button>
+                {% endif %}
+                {% endif %}
+              </div>
+              <div class="ms-3" style="margin-top: 130px;">
+                <h5>{{ user.username }}</h5>
+              </div>
+            </div>
+            <div class="p-4 text-black" style="background-color: #f8f9fa;">
+              <div class="d-flex justify-content-end text-center py-1">
+                <div>
+                  <p class="mb-1 h5">{{ total_posts }}</p>
+                  <p class="small text-muted mb-0">Photos</p>
+                </div>
+                <div class="px-3">
+                  <p class="mb-1 h5">{{ total_followers }}</p>
+                  <p class="small text-muted mb-0">Followers</p>
+                </div>
+                <div>
+                  <p class="mb-1 h5">{{ total_following }}</p>
+                  <p class="small text-muted mb-0">Following</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- posts -->
+<div class="row">
+    {% for post in posts_by_user %}
+        <div class="col-sm-6 col-md-3">
+            <div class="card my-4">
+                {% thumbnail post.image "300x300" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+
+                <div class="card-body">
+                <p class="card-text">{{ post.text }}</p>
+                <a href="{% url 'feed:detail' post.id %}" class="btn btn-primary">View Full Image</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-sm-6 offset-3 text-center py-5 my-5">
+            <h3>Welcome!</h3>
+            <p>Add your first image?</p>
+            <a href="{% url "feed:post" %}" class="btn btn-lg btn-success">Upload Image</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

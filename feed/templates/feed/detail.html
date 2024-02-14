@@ -11,7 +11,7 @@
                 {% thumbnail post.author.profile.image "45x45" crop="center" as im %}
                     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                 {% endthumbnail %}
-                &nbsp;{{ post.author.username }}
+                &nbsp;<a href="{% url 'profiles:profile' post.author.username %}" style="color:#000000; text-decoration:none">{{ post.author.username }}</a>
             </p>
             <p>{{object.text}}</p>
             <p>{{object.date | date:"F j, Y, g:i:a"}}<p>
