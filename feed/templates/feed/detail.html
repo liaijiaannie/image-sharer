@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Detail view{% endblock %}
+{% load thumbnail %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1 py-3">
+            <img src="{{ object.image.url }}" class="img-fluid rounded">
+            <hr>
+            <p>
+                {% thumbnail post.author.profile.image "45x45" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                &nbsp;{{ post.author.username }}
+            </p>
+            <p>{{object.text}}</p>
+            <p>{{object.date | date:"F j, Y, g:i:a"}}<p>
+        </div>
+    </div>
+    
+{% endblock %}

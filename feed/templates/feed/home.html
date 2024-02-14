@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}
+Home
+{% endblock%}
+
+{% block content %} 
+
+    <div class="row">
+        {% for post in posts %}
+            <div class="col-sm-6 col-md-3">
+                <div class="card my-4">
+                    <p class="card-text px-3 pt-3">
+                        {% thumbnail post.author.profile.image "45x45" crop="center" as im %}
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+                        &nbsp;{{ post.author.username }}
+                    </p>
+                    {% thumbnail post.image "300x300" crop="center" as im %}
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+
+                    <div class="card-body">
+                    <p class="card-text">{{ post.text }}</p>
+                    <a href="{% url 'feed:detail' post.id %}" class="btn btn-primary">View Full Image</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-sm-6 offset-3 text-center py-5 my-5">
+                <h3>Welcome!</h3>
+                <p>Add your first image?</p>
+                <a href="{% url "feed:post" %}" class="btn btn-lg btn-success">Upload Image</a>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
